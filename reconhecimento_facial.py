@@ -14,8 +14,9 @@ ap.add_argument("-e", "--encodings", required=True,
 args = vars(ap.parse_args())
 
 #video_capture = cv2.VideoCapture('rtsp://server:qawsed@cameras.institutoitn.com.br:554/cam/realmonitor?channel=6&subtype=0')
-video_capture = cv2.VideoCapture('rtsp://itn:1q2w3e4r@10.10.3.161:554/cam/realmonitor?channel=1&subtype=0')
-#video_capture = cv2.VideoCapture(0)
+#video_capture = cv2.VideoCapture('rtsp://itn:1q2w3e4r@10.10.3.161:554/cam/realmonitor?channel=1&subtype=0')
+video_capture = cv2.VideoCapture(0)
+
 
 # load the known faces and embeddings
 print("[INFO] loading encodings...")
@@ -28,8 +29,8 @@ process_this_frame = True
 while True:
                 ret, frame = video_capture.read()
 	
-                #small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-                small_frame = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR)
+                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+                #small_frame = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR)
     
                 rgb_small_frame = small_frame[:, :, ::-1]
 
