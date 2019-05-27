@@ -13,7 +13,7 @@ def main():
         bootstrap_servers=BROKER_URI,
         value_serializer=lambda m: msgpack.packb(m, use_bin_type=True))
 
-    cv2.imshow("PRODUCER", cv2.imread("database/click.png"))
+    cv2.imshow("PRODUCER", cv2.imread("database/001.png"))
     cv2.waitKey(0)
     for file_name in entries:
         path_filename = dir + '\\' + file_name

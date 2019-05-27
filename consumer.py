@@ -24,17 +24,19 @@ for msg in consumer:
     path = "database/"+label+".png"
     i.save(path)
     
-    picture = face_recognition.load_image_file(path)
-    #list index out of range = dlib nao conseguiu encontrar um rosto na imagem
-    #necessario normalizar antes de encodar
-    unknown_face_encodings = face_recognition.face_encodings(picture)
+    unknown_face = face_recognition.load_image_file(path)
+    
+    unknown_face_encodings = face_recognition.face_encodings(unknown_face)
+    
     if len(unknown_face_encodings) > 0:
-        encodings = face_recognition.face_encodings(picture)[0]           
-    matches = face_recognition.compare_faces(rede["encodings"], encodings)
-    rotulo = label + " - Desconhecido"
-    if True in matches:
-        count=count+1
+        unknown_face_encoding = unknown_face_encodings[0]           
+    
+    matches = face_recognition.compare_faces(rede["encodings"], unknown_face_encoding)
+    
+    if True in matches:        
         first_match_index = matches.index(True)
         rotulo = rede["names"][first_match_index]
-    print (rotulo)
-print ("Número de acertos: "+count)    
+        print (rotulo)
+        if rotulo == label:
+            count = count + 1
+    
