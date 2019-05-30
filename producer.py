@@ -13,11 +13,10 @@ def main():
         bootstrap_servers=BROKER_URI,
         value_serializer=lambda m: msgpack.packb(m, use_bin_type=True))
 
-    cv2.imshow("PRODUCER", cv2.imread("database/001.png"))
+    cv2.imshow("PRODUCER", cv2.imread("database/click.png"))
     cv2.waitKey(0)
     for file_name in entries:
         path_filename = dir + '\\' + file_name
-        print(path_filename)
         
         img = cv2.imread(path_filename)
         ret, img_encoded = cv2.imencode('*.png', img, [cv2.IMWRITE_PNG_COMPRESSION, 0])
@@ -25,10 +24,11 @@ def main():
         cv2.imshow("PRODUCER", img)
         
         msg_object = dict()
-        msg_object['face_detected'] = img_encoded.tobytes()
-        msg_object['true_label'] = file_name[0:3]
+        msg_object['faceDetected'] = img_encoded.tobytes()
+        msg_object['face_index'] = file_name[0:3]
 
         producer.send(topic, msg_object).add_errback(on_send_error)
+        print(path_filename)
 
 def on_send_error(excp):
     print(excp)
