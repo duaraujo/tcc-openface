@@ -19,47 +19,42 @@ ap.add_argument("-d", "--detection-method", type=str, default="cnn",
 	help="face detection model to use: either `hog` or `cnn`")
 args = vars(ap.parse_args())
 
+# recuperar o caminho da base de imagens
 print("[INFO] quantifying faces...")
 imagePaths = list(paths.list_images(args["dataset"]))
 
-#file = open(args["encodings"], "rb")
-#pickle_file = pickle.load(file)
+knownEncodings = []
+knownNames = []
 
-if os.stat(args["encodings"]).st_size == 0:
-	pickles = {}
-	knownEncodings = []
-	knownNames = []
-else:
-	pickles = pickle.loads(open(args["encodings"], "rb").read())
-
-	knownEncodings =  pickles['encodings'] 
-	knownNames = pickles['names']
-
+# percorrer pelo caminho das imagens
 for (i, imagePath) in enumerate(imagePaths):
 
+	# extrair o nome da pessoa pelo caminho da imagem
 	print("[INFO] processing image {}/{}".format(i + 1,len(imagePaths)))
 	name = imagePath.split(os.path.sep)[-2]
-	if name not in knownNames:
-		image = cv2.imread(imagePath)
-		rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-		boxes = face_recognition.face_locations(rgb,
-			model=args["detection_method"])
+	# carregar imagem e converter em escala de cinza
+	image = cv2.imread(imagePath)
+	rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-		encodings = face_recognition.face_encodings(rgb, boxes)
+	# detect the (x, y)-coordinates of the bounding boxes
+	# corresponding to each face in the input image
+	boxes = face_recognition.face_locations(rgb,
+		model=args["detection_method"])
 
-		for encoding in encodings:
-			knownEncodings.append(encoding)
-			knownNames.append(name)
+	# compute the facial embedding for the face
+	encodings = face_recognition.face_encodings(rgb, boxes)
 
+	# loop over the encodings
+	for encoding in encodings:
+		# add each encoding + name to our set of known names and
+		# encodings
+		knownEncodings.append(encoding)
+		knownNames.append(name)
+
+# dump the facial encodings + names to disk
 print("[INFO] serializing encodings...")
-#pickle.dump(data,pickle_file)
-#file.close()
-pickles['names'] = knownNames
-pickles['encodings'] = knownEncodings
-file = open(args["encodings"], "wb")
-
-#file.write(pickle.dumps(data))
-file.write(pickle.dumps(pickles))
-
-file.close()
+data = {"encodings": knownEncodings, "names": knownNames}
+f = open(args["encodings"], "wb")
+	f.write(pickle.dumps(data))
+f.close()
